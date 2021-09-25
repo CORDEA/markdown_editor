@@ -82,7 +82,7 @@ class MarkdownElementDetector {
                 (e) => MarkdownElement(
                   type: entry.key,
                   startIndex: e.start,
-                  endIndex: e.end,
+                  endIndex: e.end - 1,
                 ),
               ),
         )
@@ -102,6 +102,18 @@ class MarkdownElement {
   final MarkdownElementType type;
   final int startIndex;
   final int endIndex;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other is MarkdownElement &&
+            other.type == type &&
+            other.startIndex == startIndex &&
+            other.endIndex == endIndex);
+  }
+
+  @override
+  int get hashCode => hashValues(type, startIndex, endIndex);
 }
 
 @visibleForTesting

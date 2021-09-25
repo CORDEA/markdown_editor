@@ -36,7 +36,13 @@ void main() {
     final tests = [
       [
         '![test](test)',
-        [MarkdownElementType.image],
+        [
+          MarkdownElement(
+            type: MarkdownElementType.image,
+            startIndex: 0,
+            endIndex: 12,
+          ),
+        ],
       ],
       ['test', []],
     ];
@@ -49,7 +55,7 @@ void main() {
         final r = detector.detect(t[0] as String);
 
         // then
-        expect(r.map((e) => e.type).toList(), t[1]);
+        expect(r, t[1]);
       });
     }
   });
