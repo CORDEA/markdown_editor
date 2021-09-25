@@ -2,21 +2,43 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:markdown_editor/editor.dart';
 
 void main() {
-  group('detect', () {
-    late MarkdownElementDetector detector;
+  late MarkdownElementDetector detector;
 
-    setUp(() {
-      detector = MarkdownElementDetector();
-    });
+  setUp(() {
+    detector = MarkdownElementDetector();
+  });
 
+  group('detectHeading', () {
     final tests = [
-      ['# test', MarkdownElement.h1],
-      ['## test', MarkdownElement.h2],
-      ['### test', MarkdownElement.h3],
-      ['#### test', MarkdownElement.h4],
-      ['##### test', MarkdownElement.h5],
-      ['###### test', MarkdownElement.h6],
-      ['test', MarkdownElement.plain],
+      ['# test', MarkdownHeadingType.h1],
+      ['## test', MarkdownHeadingType.h2],
+      ['### test', MarkdownHeadingType.h3],
+      ['#### test', MarkdownHeadingType.h4],
+      ['##### test', MarkdownHeadingType.h5],
+      ['###### test', MarkdownHeadingType.h6],
+      ['test', MarkdownHeadingType.plain],
+    ];
+
+    for (final t in tests) {
+      test('test ${t[0]}', () {
+        // given
+
+        // when
+        final r = detector.detectHeading(t[0] as String);
+
+        // then
+        expect(r, t[1]);
+      });
+    }
+  });
+
+  group('detect', () {
+    final tests = [
+      [
+        '![test](test)',
+        [MarkdownElementType.image],
+      ],
+      ['test', []],
     ];
 
     for (final t in tests) {
@@ -27,7 +49,7 @@ void main() {
         final r = detector.detect(t[0] as String);
 
         // then
-        expect(r, t[1]);
+        expect(r.map((e) => e.type).toList(), t[1]);
       });
     }
   });

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 class MarkdownTextEditingController extends TextEditingController {
@@ -12,38 +13,38 @@ class MarkdownTextEditingController extends TextEditingController {
     final text = value;
     final spans = text.text.split('\n').map((e) {
       final line = '$e\n';
-      switch (detector.detect(e)) {
-        case MarkdownElement.h1:
+      switch (detector.detectHeading(e)) {
+        case MarkdownHeadingType.h1:
           return TextSpan(
             text: line,
             style: Theme.of(context).textTheme.headline1,
           );
-        case MarkdownElement.h2:
+        case MarkdownHeadingType.h2:
           return TextSpan(
             text: line,
             style: Theme.of(context).textTheme.headline2,
           );
-        case MarkdownElement.h3:
+        case MarkdownHeadingType.h3:
           return TextSpan(
             text: line,
             style: Theme.of(context).textTheme.headline3,
           );
-        case MarkdownElement.h4:
+        case MarkdownHeadingType.h4:
           return TextSpan(
             text: line,
             style: Theme.of(context).textTheme.headline4,
           );
-        case MarkdownElement.h5:
+        case MarkdownHeadingType.h5:
           return TextSpan(
             text: line,
             style: Theme.of(context).textTheme.headline5,
           );
-        case MarkdownElement.h6:
+        case MarkdownHeadingType.h6:
           return TextSpan(
             text: line,
             style: Theme.of(context).textTheme.headline6,
           );
-        case MarkdownElement.plain:
+        case MarkdownHeadingType.plain:
           return TextSpan(text: line);
       }
     }).toList(growable: false);
@@ -53,27 +54,58 @@ class MarkdownTextEditingController extends TextEditingController {
 
 @visibleForTesting
 class MarkdownElementDetector {
-  final matchers = {
-    MarkdownElement.h1: [RegExp(r'^#\s+')],
-    MarkdownElement.h2: [RegExp(r'^##\s+')],
-    MarkdownElement.h3: [RegExp(r'^###\s+')],
-    MarkdownElement.h4: [RegExp(r'^####\s+')],
-    MarkdownElement.h5: [RegExp(r'^#####\s+')],
-    MarkdownElement.h6: [RegExp(r'^######\s+')],
+  final _headingMatchers = {
+    MarkdownHeadingType.h1: [RegExp(r'^#\s+')],
+    MarkdownHeadingType.h2: [RegExp(r'^##\s+')],
+    MarkdownHeadingType.h3: [RegExp(r'^###\s+')],
+    MarkdownHeadingType.h4: [RegExp(r'^####\s+')],
+    MarkdownHeadingType.h5: [RegExp(r'^#####\s+')],
+    MarkdownHeadingType.h6: [RegExp(r'^######\s+')],
   };
 
-  MarkdownElement detect(String line) {
-    for (final matcher in matchers.entries) {
-      if (matcher.value.any((e) => e.hasMatch(line))) {
-        return matcher.key;
-      }
-    }
-    return MarkdownElement.plain;
+  final _matchers = {
+    MarkdownElementType.image: [RegExp(r'!\[\w+\]\(\w+\)')],
+  };
+
+  MarkdownHeadingType detectHeading(String line) {
+    return _headingMatchers.entries
+            .where((e) => e.value.any((e) => e.hasMatch(line)))
+            .firstOrNull
+            ?.key ??
+        MarkdownHeadingType.plain;
+  }
+
+  List<MarkdownElement> detect(String line) {
+    return _matchers.entries
+        .map(
+          (entry) => entry.value.map((e) => e.allMatches(line)).flattened.map(
+                (e) => MarkdownElement(
+                  type: entry.key,
+                  startIndex: e.start,
+                  endIndex: e.end,
+                ),
+              ),
+        )
+        .flattened
+        .toList(growable: false);
   }
 }
 
 @visibleForTesting
-enum MarkdownElement {
+class MarkdownElement {
+  MarkdownElement({
+    required this.type,
+    required this.startIndex,
+    required this.endIndex,
+  });
+
+  final MarkdownElementType type;
+  final int startIndex;
+  final int endIndex;
+}
+
+@visibleForTesting
+enum MarkdownHeadingType {
   h1,
   h2,
   h3,
@@ -81,4 +113,9 @@ enum MarkdownElement {
   h5,
   h6,
   plain,
+}
+
+@visibleForTesting
+enum MarkdownElementType {
+  image,
 }
