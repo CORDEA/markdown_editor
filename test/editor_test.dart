@@ -74,6 +74,16 @@ void main() {
           ),
         ],
       ],
+      [
+        '~~test~~',
+        [
+          MarkdownElement(
+            type: MarkdownElementType.strikethrough,
+            startIndex: 0,
+            endIndex: 7,
+          ),
+        ],
+      ],
       ['test', []],
     ];
 

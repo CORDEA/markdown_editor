@@ -68,6 +68,7 @@ class MarkdownElementDetector {
     MarkdownElementType.link: [RegExp(r'(?<!!)\[\w+\]\(\w+\)')],
     MarkdownElementType.bold: [RegExp(r'\*\*\w+\*\*')],
     MarkdownElementType.italic: [RegExp(r'(?<!\*)\*\w+\*(?!\*)')],
+    MarkdownElementType.strikethrough: [RegExp(r'~~\w+~~')],
   };
 
   MarkdownHeadingType detectHeading(String line) {
@@ -136,4 +137,5 @@ enum MarkdownElementType {
   link,
   bold,
   italic,
+  strikethrough,
 }
