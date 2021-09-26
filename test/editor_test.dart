@@ -41,7 +41,7 @@ void main() {
           MarkdownElement(
             type: MarkdownElementType.image,
             startIndex: 0,
-            endIndex: 12,
+            endIndex: 13,
           ),
         ],
       ],
@@ -51,7 +51,7 @@ void main() {
           MarkdownElement(
             type: MarkdownElementType.link,
             startIndex: 0,
-            endIndex: 11,
+            endIndex: 12,
           ),
         ],
       ],
@@ -61,7 +61,7 @@ void main() {
           MarkdownElement(
             type: MarkdownElementType.bold,
             startIndex: 0,
-            endIndex: 7,
+            endIndex: 8,
           ),
         ],
       ],
@@ -71,7 +71,7 @@ void main() {
           MarkdownElement(
             type: MarkdownElementType.italic,
             startIndex: 0,
-            endIndex: 5,
+            endIndex: 6,
           ),
         ],
       ],
@@ -81,7 +81,7 @@ void main() {
           MarkdownElement(
             type: MarkdownElementType.strikethrough,
             startIndex: 0,
-            endIndex: 7,
+            endIndex: 8,
           ),
         ],
       ],

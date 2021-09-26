@@ -11,43 +11,48 @@ class MarkdownTextEditingController extends TextEditingController {
     required bool withComposing,
   }) {
     final text = value;
-    final spans = text.text.split('\n').map((e) {
-      final line = '$e\n';
-      switch (detector.detectLineType(e)) {
+    final spans = text.text.split('\n').map((line) {
+      final TextStyle baseStyle;
+      switch (detector.detectLineType(line)) {
         case MarkdownLineType.h1:
-          return TextSpan(
-            text: line,
-            style: Theme.of(context).textTheme.headline1,
-          );
+          baseStyle = Theme.of(context).textTheme.headline1!;
+          break;
         case MarkdownLineType.h2:
-          return TextSpan(
-            text: line,
-            style: Theme.of(context).textTheme.headline2,
-          );
+          baseStyle = Theme.of(context).textTheme.headline2!;
+          break;
         case MarkdownLineType.h3:
-          return TextSpan(
-            text: line,
-            style: Theme.of(context).textTheme.headline3,
-          );
+          baseStyle = Theme.of(context).textTheme.headline3!;
+          break;
         case MarkdownLineType.h4:
-          return TextSpan(
-            text: line,
-            style: Theme.of(context).textTheme.headline4,
-          );
+          baseStyle = Theme.of(context).textTheme.headline4!;
+          break;
         case MarkdownLineType.h5:
-          return TextSpan(
-            text: line,
-            style: Theme.of(context).textTheme.headline5,
-          );
+          baseStyle = Theme.of(context).textTheme.headline5!;
+          break;
         case MarkdownLineType.h6:
-          return TextSpan(
-            text: line,
-            style: Theme.of(context).textTheme.headline6,
-          );
+          baseStyle = Theme.of(context).textTheme.headline6!;
+          break;
         case MarkdownLineType.blockquote:
         case MarkdownLineType.plain:
-          return TextSpan(text: line);
+          baseStyle = Theme.of(context).textTheme.bodyText2!;
       }
+
+      final elementSpans = <TextSpan>[];
+      var endIndex = 0;
+      for (final element in detector.detect(line)
+        ..sortBy<num>((e) => e.startIndex)) {
+        if (element.startIndex > endIndex) {
+          elementSpans.add(
+            TextSpan(text: line.substring(endIndex, element.startIndex + 1)),
+          );
+        }
+        elementSpans.add(
+          TextSpan(text: line.substring(element.startIndex, element.endIndex)),
+        );
+        endIndex = element.endIndex;
+      }
+      elementSpans.add(const TextSpan(text: '\n'));
+      return TextSpan(children: elementSpans, style: baseStyle);
     }).toList(growable: false);
     return TextSpan(children: spans);
   }
@@ -88,7 +93,7 @@ class MarkdownElementDetector {
                 (e) => MarkdownElement(
                   type: entry.key,
                   startIndex: e.start,
-                  endIndex: e.end - 1,
+                  endIndex: e.end,
                 ),
               ),
         )
