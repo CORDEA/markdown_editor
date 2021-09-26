@@ -44,6 +44,26 @@ void main() {
           ),
         ],
       ],
+      [
+        '**test**',
+        [
+          MarkdownElement(
+            type: MarkdownElementType.bold,
+            startIndex: 0,
+            endIndex: 7,
+          ),
+        ],
+      ],
+      [
+        '*test*',
+        [
+          MarkdownElement(
+            type: MarkdownElementType.italic,
+            startIndex: 0,
+            endIndex: 5,
+          ),
+        ],
+      ],
       ['test', []],
     ];
 
