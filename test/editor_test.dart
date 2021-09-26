@@ -45,6 +45,16 @@ void main() {
         ],
       ],
       [
+        '[test](test)',
+        [
+          MarkdownElement(
+            type: MarkdownElementType.link,
+            startIndex: 0,
+            endIndex: 11,
+          ),
+        ],
+      ],
+      [
         '**test**',
         [
           MarkdownElement(

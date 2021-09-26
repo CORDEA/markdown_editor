@@ -65,6 +65,7 @@ class MarkdownElementDetector {
 
   final _matchers = {
     MarkdownElementType.image: [RegExp(r'!\[\w+\]\(\w+\)')],
+    MarkdownElementType.link: [RegExp(r'(?<!!)\[\w+\]\(\w+\)')],
     MarkdownElementType.bold: [RegExp(r'\*\*\w+\*\*')],
     MarkdownElementType.italic: [RegExp(r'(?<!\*)\*\w+\*(?!\*)')],
   };
@@ -132,6 +133,7 @@ enum MarkdownHeadingType {
 @visibleForTesting
 enum MarkdownElementType {
   image,
+  link,
   bold,
   italic,
 }
