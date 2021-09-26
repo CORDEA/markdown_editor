@@ -13,38 +13,39 @@ class MarkdownTextEditingController extends TextEditingController {
     final text = value;
     final spans = text.text.split('\n').map((e) {
       final line = '$e\n';
-      switch (detector.detectHeading(e)) {
-        case MarkdownHeadingType.h1:
+      switch (detector.detectLineType(e)) {
+        case MarkdownLineType.h1:
           return TextSpan(
             text: line,
             style: Theme.of(context).textTheme.headline1,
           );
-        case MarkdownHeadingType.h2:
+        case MarkdownLineType.h2:
           return TextSpan(
             text: line,
             style: Theme.of(context).textTheme.headline2,
           );
-        case MarkdownHeadingType.h3:
+        case MarkdownLineType.h3:
           return TextSpan(
             text: line,
             style: Theme.of(context).textTheme.headline3,
           );
-        case MarkdownHeadingType.h4:
+        case MarkdownLineType.h4:
           return TextSpan(
             text: line,
             style: Theme.of(context).textTheme.headline4,
           );
-        case MarkdownHeadingType.h5:
+        case MarkdownLineType.h5:
           return TextSpan(
             text: line,
             style: Theme.of(context).textTheme.headline5,
           );
-        case MarkdownHeadingType.h6:
+        case MarkdownLineType.h6:
           return TextSpan(
             text: line,
             style: Theme.of(context).textTheme.headline6,
           );
-        case MarkdownHeadingType.plain:
+        case MarkdownLineType.blockquote:
+        case MarkdownLineType.plain:
           return TextSpan(text: line);
       }
     }).toList(growable: false);
@@ -54,13 +55,14 @@ class MarkdownTextEditingController extends TextEditingController {
 
 @visibleForTesting
 class MarkdownElementDetector {
-  final _headingMatchers = {
-    MarkdownHeadingType.h1: [RegExp(r'^#\s+')],
-    MarkdownHeadingType.h2: [RegExp(r'^##\s+')],
-    MarkdownHeadingType.h3: [RegExp(r'^###\s+')],
-    MarkdownHeadingType.h4: [RegExp(r'^####\s+')],
-    MarkdownHeadingType.h5: [RegExp(r'^#####\s+')],
-    MarkdownHeadingType.h6: [RegExp(r'^######\s+')],
+  final _lineMatchers = {
+    MarkdownLineType.h1: [RegExp(r'^#\s+')],
+    MarkdownLineType.h2: [RegExp(r'^##\s+')],
+    MarkdownLineType.h3: [RegExp(r'^###\s+')],
+    MarkdownLineType.h4: [RegExp(r'^####\s+')],
+    MarkdownLineType.h5: [RegExp(r'^#####\s+')],
+    MarkdownLineType.h6: [RegExp(r'^######\s+')],
+    MarkdownLineType.blockquote: [RegExp(r'^>\s+')],
   };
 
   final _matchers = {
@@ -71,12 +73,12 @@ class MarkdownElementDetector {
     MarkdownElementType.strikethrough: [RegExp(r'~~\w+~~')],
   };
 
-  MarkdownHeadingType detectHeading(String line) {
-    return _headingMatchers.entries
+  MarkdownLineType detectLineType(String line) {
+    return _lineMatchers.entries
             .where((e) => e.value.any((e) => e.hasMatch(line)))
             .firstOrNull
             ?.key ??
-        MarkdownHeadingType.plain;
+        MarkdownLineType.plain;
   }
 
   List<MarkdownElement> detect(String line) {
@@ -121,13 +123,14 @@ class MarkdownElement {
 }
 
 @visibleForTesting
-enum MarkdownHeadingType {
+enum MarkdownLineType {
   h1,
   h2,
   h3,
   h4,
   h5,
   h6,
+  blockquote,
   plain,
 }
 

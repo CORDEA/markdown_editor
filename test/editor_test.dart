@@ -8,15 +8,16 @@ void main() {
     detector = MarkdownElementDetector();
   });
 
-  group('detectHeading', () {
+  group('detectLineType', () {
     final tests = [
-      ['# test', MarkdownHeadingType.h1],
-      ['## test', MarkdownHeadingType.h2],
-      ['### test', MarkdownHeadingType.h3],
-      ['#### test', MarkdownHeadingType.h4],
-      ['##### test', MarkdownHeadingType.h5],
-      ['###### test', MarkdownHeadingType.h6],
-      ['test', MarkdownHeadingType.plain],
+      ['# test', MarkdownLineType.h1],
+      ['## test', MarkdownLineType.h2],
+      ['### test', MarkdownLineType.h3],
+      ['#### test', MarkdownLineType.h4],
+      ['##### test', MarkdownLineType.h5],
+      ['###### test', MarkdownLineType.h6],
+      ['> test', MarkdownLineType.blockquote],
+      ['test', MarkdownLineType.plain],
     ];
 
     for (final t in tests) {
@@ -24,7 +25,7 @@ void main() {
         // given
 
         // when
-        final r = detector.detectHeading(t[0] as String);
+        final r = detector.detectLineType(t[0] as String);
 
         // then
         expect(r, t[1]);
