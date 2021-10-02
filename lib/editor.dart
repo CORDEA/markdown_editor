@@ -37,20 +37,56 @@ class MarkdownTextEditingController extends TextEditingController {
           baseStyle = Theme.of(context).textTheme.bodyText2!;
       }
 
+      final elements = detector.detect(line);
+      if (elements.isEmpty) {
+        return TextSpan(text: line, style: baseStyle);
+      }
+
       final elementSpans = <TextSpan>[];
       var endIndex = 0;
-      for (final element in detector.detect(line)
-        ..sortBy<num>((e) => e.startIndex)) {
+      for (final element in elements..sortBy<num>((e) => e.startIndex)) {
         if (element.startIndex > endIndex) {
           elementSpans.add(
-            TextSpan(text: line.substring(endIndex, element.startIndex + 1)),
+            TextSpan(text: line.substring(endIndex, element.startIndex)),
           );
         }
-        elementSpans.add(
-          TextSpan(text: line.substring(element.startIndex, element.endIndex)),
-        );
+
+        final String text =
+            line.substring(element.startIndex, element.endIndex);
+        final TextSpan span;
+        switch (element.type) {
+          case MarkdownElementType.image:
+            span = TextSpan(text: text);
+            break;
+          case MarkdownElementType.link:
+            span = TextSpan(text: text);
+            break;
+          case MarkdownElementType.bold:
+            span = TextSpan(
+              text: text,
+              style: baseStyle.copyWith(fontWeight: FontWeight.bold),
+            );
+            break;
+          case MarkdownElementType.italic:
+            span = TextSpan(
+              text: text,
+              style: baseStyle.copyWith(fontStyle: FontStyle.italic),
+            );
+            break;
+          case MarkdownElementType.strikethrough:
+            span = TextSpan(
+              text: text,
+              style: baseStyle.copyWith(decoration: TextDecoration.lineThrough),
+            );
+            break;
+        }
+        elementSpans.add(span);
         endIndex = element.endIndex;
       }
+      if (line.length > endIndex) {
+        elementSpans.add(TextSpan(text: line.substring(endIndex)));
+      }
+
       elementSpans.add(const TextSpan(text: '\n'));
       return TextSpan(children: elementSpans, style: baseStyle);
     }).toList(growable: false);
