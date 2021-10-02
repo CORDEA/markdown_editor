@@ -59,7 +59,10 @@ class MarkdownTextEditingController extends TextEditingController {
             span = TextSpan(text: text);
             break;
           case MarkdownElementType.link:
-            span = TextSpan(text: text);
+            span = TextSpan(
+              text: text,
+              style: baseStyle.copyWith(decoration: TextDecoration.underline),
+            );
             break;
           case MarkdownElementType.bold:
             span = TextSpan(
