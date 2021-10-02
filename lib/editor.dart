@@ -1,5 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'editor.freezed.dart';
 
 class MarkdownTextEditingController extends TextEditingController {
   final detector = MarkdownElementDetector();
@@ -53,36 +56,25 @@ class MarkdownTextEditingController extends TextEditingController {
 
         final String text =
             line.substring(element.startIndex, element.endIndex);
-        final TextSpan span;
-        switch (element.type) {
-          case MarkdownElementType.image:
-            span = TextSpan(text: text);
-            break;
-          case MarkdownElementType.link:
-            span = TextSpan(
-              text: text,
-              style: baseStyle.copyWith(decoration: TextDecoration.underline),
-            );
-            break;
-          case MarkdownElementType.bold:
-            span = TextSpan(
-              text: text,
-              style: baseStyle.copyWith(fontWeight: FontWeight.bold),
-            );
-            break;
-          case MarkdownElementType.italic:
-            span = TextSpan(
-              text: text,
-              style: baseStyle.copyWith(fontStyle: FontStyle.italic),
-            );
-            break;
-          case MarkdownElementType.strikethrough:
-            span = TextSpan(
-              text: text,
-              style: baseStyle.copyWith(decoration: TextDecoration.lineThrough),
-            );
-            break;
-        }
+        final span = element.type.when(
+          image: (url) => TextSpan(text: text),
+          link: (url) => TextSpan(
+            text: text,
+            style: baseStyle.copyWith(decoration: TextDecoration.underline),
+          ),
+          bold: () => TextSpan(
+            text: text,
+            style: baseStyle.copyWith(fontWeight: FontWeight.bold),
+          ),
+          italic: () => TextSpan(
+            text: text,
+            style: baseStyle.copyWith(fontStyle: FontStyle.italic),
+          ),
+          strikethrough: () => TextSpan(
+            text: text,
+            style: baseStyle.copyWith(decoration: TextDecoration.lineThrough),
+          ),
+        );
         elementSpans.add(span);
         endIndex = element.endIndex;
       }
@@ -110,11 +102,11 @@ class MarkdownElementDetector {
   };
 
   final _matchers = {
-    MarkdownElementType.image: [RegExp(r'!\[\w+\]\(\w+\)')],
-    MarkdownElementType.link: [RegExp(r'(?<!!)\[\w+\]\(\w+\)')],
-    MarkdownElementType.bold: [RegExp(r'\*\*\w+\*\*')],
-    MarkdownElementType.italic: [RegExp(r'(?<!\*)\*\w+\*(?!\*)')],
-    MarkdownElementType.strikethrough: [RegExp(r'~~\w+~~')],
+    _MarkdownElementType.image: [RegExp(r'!\[\w+\]\((\w+)\)')],
+    _MarkdownElementType.link: [RegExp(r'(?<!!)\[\w+\]\((\w+)\)')],
+    _MarkdownElementType.bold: [RegExp(r'\*\*\w+\*\*')],
+    _MarkdownElementType.italic: [RegExp(r'(?<!\*)\*\w+\*(?!\*)')],
+    _MarkdownElementType.strikethrough: [RegExp(r'~~\w+~~')],
   };
 
   MarkdownLineType detectLineType(String line) {
@@ -129,12 +121,32 @@ class MarkdownElementDetector {
     return _matchers.entries
         .map(
           (entry) => entry.value.map((e) => e.allMatches(line)).flattened.map(
-                (e) => MarkdownElement(
-                  type: entry.key,
-                  startIndex: e.start,
-                  endIndex: e.end,
-                ),
-              ),
+            (e) {
+              final MarkdownElementType type;
+              switch (entry.key) {
+                case _MarkdownElementType.image:
+                  type = MarkdownElementType.image(url: e.group(1) ?? '');
+                  break;
+                case _MarkdownElementType.link:
+                  type = MarkdownElementType.link(url: e.group(1) ?? '');
+                  break;
+                case _MarkdownElementType.bold:
+                  type = const MarkdownElementType.bold();
+                  break;
+                case _MarkdownElementType.italic:
+                  type = const MarkdownElementType.italic();
+                  break;
+                case _MarkdownElementType.strikethrough:
+                  type = const MarkdownElementType.strikethrough();
+                  break;
+              }
+              return MarkdownElement(
+                type: type,
+                startIndex: e.start,
+                endIndex: e.end,
+              );
+            },
+          ),
         )
         .flattened
         .toList(growable: false);
@@ -178,11 +190,27 @@ enum MarkdownLineType {
   plain,
 }
 
-@visibleForTesting
-enum MarkdownElementType {
+enum _MarkdownElementType {
   image,
   link,
   bold,
   italic,
   strikethrough,
+}
+
+@freezed
+@visibleForTesting
+class MarkdownElementType with _$MarkdownElementType {
+  const factory MarkdownElementType.image({required String url}) =
+      _MarkdownElementImage;
+
+  const factory MarkdownElementType.link({required String url}) =
+      _MarkdownElementLink;
+
+  const factory MarkdownElementType.bold() = _MarkdownElementBold;
+
+  const factory MarkdownElementType.italic() = _MarkdownElementItalic;
+
+  const factory MarkdownElementType.strikethrough() =
+      _MarkdownElementStrikethrough;
 }

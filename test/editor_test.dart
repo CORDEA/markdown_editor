@@ -36,22 +36,22 @@ void main() {
   group('detect', () {
     final tests = [
       [
-        '![test](test)',
+        '![test](url)',
         [
           MarkdownElement(
-            type: MarkdownElementType.image,
+            type: const MarkdownElementType.image(url: 'url'),
             startIndex: 0,
-            endIndex: 13,
+            endIndex: 12,
           ),
         ],
       ],
       [
-        '[test](test)',
+        '[test](url)',
         [
           MarkdownElement(
-            type: MarkdownElementType.link,
+            type: const MarkdownElementType.link(url: 'url'),
             startIndex: 0,
-            endIndex: 12,
+            endIndex: 11,
           ),
         ],
       ],
@@ -59,7 +59,7 @@ void main() {
         '**test**',
         [
           MarkdownElement(
-            type: MarkdownElementType.bold,
+            type: const MarkdownElementType.bold(),
             startIndex: 0,
             endIndex: 8,
           ),
@@ -69,7 +69,7 @@ void main() {
         '*test*',
         [
           MarkdownElement(
-            type: MarkdownElementType.italic,
+            type: const MarkdownElementType.italic(),
             startIndex: 0,
             endIndex: 6,
           ),
@@ -79,7 +79,7 @@ void main() {
         '~~test~~',
         [
           MarkdownElement(
-            type: MarkdownElementType.strikethrough,
+            type: const MarkdownElementType.strikethrough(),
             startIndex: 0,
             endIndex: 8,
           ),
