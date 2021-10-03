@@ -36,13 +36,19 @@ class MarkdownTextEditingController extends TextEditingController {
           baseStyle = Theme.of(context).textTheme.headline6!;
           break;
         case MarkdownLineType.blockquote:
+          baseStyle = Theme.of(context)
+              .textTheme
+              .bodyText2!
+              .copyWith(color: Colors.grey);
+          break;
         case MarkdownLineType.plain:
           baseStyle = Theme.of(context).textTheme.bodyText2!;
+          break;
       }
 
       final elements = detector.detect(line);
       if (elements.isEmpty) {
-        return TextSpan(text: line, style: baseStyle);
+        return TextSpan(text: '$line\n', style: baseStyle);
       }
 
       final elementSpans = <TextSpan>[];
