@@ -57,7 +57,26 @@ class MarkdownTextEditingController extends TextEditingController {
         final String text =
             line.substring(element.startIndex, element.endIndex);
         final span = element.type.when(
-          image: (url) => TextSpan(text: text),
+          image: (url) => TextSpan(
+            children: [
+              WidgetSpan(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: SizedBox.square(
+                      dimension: 36,
+                      child: Image(
+                        image: NetworkImage(url),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              TextSpan(text: text),
+            ],
+          ),
           link: (url) => TextSpan(
             text: text,
             style: baseStyle.copyWith(decoration: TextDecoration.underline),
@@ -102,8 +121,8 @@ class MarkdownElementDetector {
   };
 
   final _matchers = {
-    _MarkdownElementType.image: [RegExp(r'!\[\w+\]\((\w+)\)')],
-    _MarkdownElementType.link: [RegExp(r'(?<!!)\[\w+\]\((\w+)\)')],
+    _MarkdownElementType.image: [RegExp(r'!\[\w+\]\((.+)\)')],
+    _MarkdownElementType.link: [RegExp(r'(?<!!)\[\w+\]\((.+)\)')],
     _MarkdownElementType.bold: [RegExp(r'\*\*\w+\*\*')],
     _MarkdownElementType.italic: [RegExp(r'(?<!\*)\*\w+\*(?!\*)')],
     _MarkdownElementType.strikethrough: [RegExp(r'~~\w+~~')],

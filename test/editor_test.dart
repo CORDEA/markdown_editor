@@ -36,22 +36,22 @@ void main() {
   group('detect', () {
     final tests = [
       [
-        '![test](url)',
+        '![test](https://example.com)',
         [
           MarkdownElement(
-            type: const MarkdownElementType.image(url: 'url'),
+            type: const MarkdownElementType.image(url: 'https://example.com'),
             startIndex: 0,
-            endIndex: 12,
+            endIndex: 28,
           ),
         ],
       ],
       [
-        '[test](url)',
+        '[test](https://example.com)',
         [
           MarkdownElement(
-            type: const MarkdownElementType.link(url: 'url'),
+            type: const MarkdownElementType.link(url: 'https://example.com'),
             startIndex: 0,
-            endIndex: 11,
+            endIndex: 27,
           ),
         ],
       ],
