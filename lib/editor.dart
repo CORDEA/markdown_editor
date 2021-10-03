@@ -38,11 +38,11 @@ class MarkdownTextEditingController extends TextEditingController {
         case MarkdownLineType.blockquote:
           baseStyle = Theme.of(context)
               .textTheme
-              .bodyText2!
+              .bodyText1!
               .copyWith(color: Colors.grey);
           break;
         case MarkdownLineType.plain:
-          baseStyle = Theme.of(context).textTheme.bodyText2!;
+          baseStyle = Theme.of(context).textTheme.bodyText1!;
           break;
       }
 
